@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pratyush Shukla - AI/ML Engineer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">PS</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#about" class="nav-link">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#projects" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#skills" class="nav-link">Skills</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link">Contact</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-background">
+            <canvas id="hero-canvas"></canvas>
+        </div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="title-line">Hi, I'm</span>
+                    <span class="title-name">Pratyush Shukla</span>
+                    <span class="title-role">AI/ML Engineer</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Building intelligent systems at the intersection of AI, Finance, and Technology
+                </p>
+                <div class="hero-buttons">
+                    <a href="#projects" class="btn btn-primary">View Projects</a>
+                    <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+                </div>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">84</span>
+                    <span class="stat-label">Repositories</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">81</span>
+                    <span class="stat-label">Followers</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">3+</span>
+                    <span class="stat-label">Years Experience</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">About Me</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p class="about-description">
+                        I'm an AI/ML Engineer at <strong>AgentOps-AI</strong> in San Francisco, passionate about building intelligent systems that solve real-world problems. 
+                        With expertise in machine learning, deep learning, and financial technology, I specialize in creating innovative solutions at the intersection of AI and finance.
+                    </p>
+                    <p class="about-description">
+                        My journey spans from developing DeFi analytics tools to benchmarking neural networks, from computer vision applications to financial modeling. 
+                        I believe in the power of technology to transform industries and create meaningful impact.
+                    </p>
+                    <div class="about-highlights">
+                        <div class="highlight-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>NYU Tandon Graduate</span>
+                        </div>
+                        <div class="highlight-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>San Francisco, CA</span>
+                        </div>
+                        <div class="highlight-item">
+                            <i class="fas fa-code"></i>
+                            <span>Full-Stack AI Developer</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <div class="image-container">
+                        <div class="floating-elements">
+                            <div class="floating-element" data-speed="0.5">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="floating-element" data-speed="0.3">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="floating-element" data-speed="0.7">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2 class="section-title">Featured Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card" data-category="ai-ml">
+                    <div class="project-image">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">DeFiLlama-Curl</h3>
+                        <p class="project-description">
+                            Unofficial Python wrapper for DeFiLlama API with 12+ stars on GitHub. 
+                            Enables seamless access to DeFi protocol data and analytics.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">API</span>
+                            <span class="tech-tag">DeFi</span>
+                        </div>
+                        <a href="https://github.com/dot-agi/DeFiLlama-Curl" class="project-link" target="_blank">
+                            <i class="fab fa-github"></i> View Project
+                        </a>
+                    </div>
+                </div>
+
+                <div class="project-card" data-category="ai-ml">
+                    <div class="project-image">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">DL Benchmark</h3>
+                        <p class="project-description">
+                            Comprehensive benchmarking of PyTorch vs Flux (Julia) for high-performance computing. 
+                            Performance analysis on MNIST dataset with detailed metrics.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">PyTorch</span>
+                            <span class="tech-tag">Julia</span>
+                            <span class="tech-tag">HPC</span>
+                        </div>
+                        <a href="https://github.com/dot-agi/dl-benchmark" class="project-link" target="_blank">
+                            <i class="fab fa-github"></i> View Project
+                        </a>
+                    </div>
+                </div>
+
+                <div class="project-card" data-category="finance">
+                    <div class="project-image">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Crypto Analysis</h3>
+                        <p class="project-description">
+                            Advanced DeFi data analysis using DeFiLlama Python API. 
+                            Comprehensive insights into cryptocurrency market trends and protocol performance.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Jupyter</span>
+                            <span class="tech-tag">Data Analysis</span>
+                            <span class="tech-tag">Crypto</span>
+                        </div>
+                        <a href="https://github.com/dot-agi/Crypto-Analysis" class="project-link" target="_blank">
+                            <i class="fab fa-github"></i> View Project
+                        </a>
+                    </div>
+                </div>
+
+                <div class="project-card" data-category="ai-ml">
+                    <div class="project-image">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Object Detection</h3>
+                        <p class="project-description">
+                            Computer vision project implementing state-of-the-art object detection algorithms. 
+                            Real-time image processing and classification capabilities.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Computer Vision</span>
+                            <span class="tech-tag">Deep Learning</span>
+                            <span class="tech-tag">Python</span>
+                        </div>
+                        <a href="https://github.com/dot-agi/Object-Detection" class="project-link" target="_blank">
+                            <i class="fab fa-github"></i> View Project
+                        </a>
+                    </div>
+                </div>
+
+                <div class="project-card" data-category="finance">
+                    <div class="project-image">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Stock Price Movement</h3>
+                        <p class="project-description">
+                            Analysis of quarterly earnings reports impact on stock price movements. 
+                            Machine learning models for financial prediction and risk assessment.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">C</span>
+                            <span class="tech-tag">Financial ML</span>
+                            <span class="tech-tag">Data Science</span>
+                        </div>
+                        <a href="https://github.com/dot-agi/Stock-Price-Movement" class="project-link" target="_blank">
+                            <i class="fab fa-github"></i> View Project
+                        </a>
+                    </div>
+                </div>
+
+                <div class="project-card" data-category="ai-ml">
+                    <div class="project-image">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Feature Engineering</h3>
+                        <p class="project-description">
+                            Implementation of 12 advanced feature engineering techniques for machine learning. 
+                            Comprehensive toolkit for data preprocessing and model optimization.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Feature Engineering</span>
+                            <span class="tech-tag">ML</span>
+                            <span class="tech-tag">Python</span>
+                        </div>
+                        <a href="https://github.com/dot-agi/Feature-Engineering" class="project-link" target="_blank">
+                            <i class="fab fa-github"></i> View Project
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <h2 class="section-title">Skills & Expertise</h2>
+            <div class="skills-content">
+                <div class="skills-category">
+                    <h3 class="category-title">Programming Languages</h3>
+                    <div class="skills-grid">
+                        <div class="skill-item">
+                            <div class="skill-icon">🐍</div>
+                            <span class="skill-name">Python</span>
+                            <div class="skill-level">
+                                <div class="skill-bar" data-level="95"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">⚡</div>
+                            <span class="skill-name">C++</span>
+                            <div class="skill-level">
+                                <div class="skill-bar" data-level="90"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">🔬</div>
+                            <span class="skill-name">Julia</span>
+                            <div class="skill-level">
+                                <div class="skill-bar" data-level="85"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">📊</div>
+                            <span class="skill-name">MATLAB</span>
+                            <div class="skill-level">
+                                <div class="skill-bar" data-level="80"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skills-category">
+                    <h3 class="category-title">AI & Machine Learning</h3>
+                    <div class="skills-grid">
+                        <div class="skill-item">
+                            <div class="skill-icon">🧠</div>
+                            <span class="skill-name">Deep Learning</span>
+                            <div class="skill-level">
+                                <div class="skill-bar" data-level="95"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">🤖</div>
+                            <span class="skill-name">Machine Learning</span>
+                            <div class="skill-level">
+                                <div class="skill-bar" data-level="90"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">👁️</div>
+                            <span class="skill-name">Computer Vision</span>
+                            <div class="skill-level">
+                                <div class="skill-bar" data-level="85"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">🔥</div>
+                            <span class="skill-name">PyTorch</span>
+                            <div class="skill-level">
+                                <div class="skill-bar" data-level="90"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skills-category">
+                    <h3 class="category-title">Finance & Data</h3>
+                    <div class="skills-grid">
+                        <div class="skill-item">
+                            <div class="skill-icon">💰</div>
+                            <span class="skill-name">DeFi Analytics</span>
+                            <div class="skill-level">
+                                <div class="skill-bar" data-level="90"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">📈</div>
+                            <span class="skill-name">Financial Modeling</span>
+                            <div class="skill-level">
+                                <div class="skill-bar" data-level="85"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">🔍</div>
+                            <span class="skill-name">Data Analysis</span>
+                            <div class="skill-level">
+                                <div class="skill-bar" data-level="95"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">⚙️</div>
+                            <span class="skill-name">Feature Engineering</span>
+                            <div class="skill-level">
+                                <div class="skill-bar" data-level="90"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div class="contact-details">
+                            <h4>Email</h4>
+                            <a href="mailto:ps4534@nyu.edu">ps4534@nyu.edu</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-github"></i>
+                        <div class="contact-details">
+                            <h4>GitHub</h4>
+                            <a href="https://github.com/dot-agi" target="_blank">@dot-agi</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-twitter"></i>
+                        <div class="contact-details">
+                            <h4>Twitter</h4>
+                            <a href="https://twitter.com/pratty_agi" target="_blank">@pratty_agi</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div class="contact-details">
+                            <h4>Location</h4>
+                            <span>San Francisco, CA</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <input type="text" id="name" name="name" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="email" name="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="message" name="message" placeholder="Your Message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">
+                    <p>&copy; 2024 Pratyush Shukla. All rights reserved.</p>
+                </div>
+                <div class="footer-social">
+                    <a href="https://github.com/dot-agi" target="_blank" class="social-link">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://twitter.com/pratty_agi" target="_blank" class="social-link">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="mailto:ps4534@nyu.edu" class="social-link">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
