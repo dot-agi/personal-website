@@ -3,6 +3,7 @@ let scene, camera, renderer, particles, particleSystem;
 let mouseX = 0, mouseY = 0;
 let windowHalfX = window.innerWidth / 2;
 let windowHalfY = window.innerHeight / 2;
+let time = 0;
 
 // Initialize Three.js Scene
 function initThreeJS() {
@@ -19,6 +20,7 @@ function initThreeJS() {
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setClearColor(0x000000, 0);
 
     // Create particle system
     createParticleSystem();
@@ -36,60 +38,111 @@ function initThreeJS() {
 
 // Create particle system
 function createParticleSystem() {
-    const particleCount = 1000;
+    const particleCount = 1500;
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
     const sizes = new Float32Array(particleCount);
+    const velocities = new Float32Array(particleCount * 3);
 
     const geometry = new THREE.BufferGeometry();
 
     for (let i = 0; i < particleCount; i++) {
         // Position
-        positions[i * 3] = (Math.random() - 0.5) * 20;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+        positions[i * 3] = (Math.random() - 0.5) * 30;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 30;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 30;
 
-        // Color
-        colors[i * 3] = Math.random() * 0.5 + 0.5;
-        colors[i * 3 + 1] = Math.random() * 0.5 + 0.5;
-        colors[i * 3 + 2] = Math.random() * 0.5 + 0.5;
+        // Velocity
+        velocities[i * 3] = (Math.random() - 0.5) * 0.02;
+        velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.02;
+        velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.02;
+
+        // Color - Cyberpunk neon colors
+        const colorChoice = Math.random();
+        if (colorChoice < 0.4) {
+            // Green neon
+            colors[i * 3] = 0.0;
+            colors[i * 3 + 1] = 1.0;
+            colors[i * 3 + 2] = 0.25;
+        } else if (colorChoice < 0.7) {
+            // Cyan neon
+            colors[i * 3] = 0.0;
+            colors[i * 3 + 1] = 0.8;
+            colors[i * 3 + 2] = 1.0;
+        } else {
+            // Magenta neon
+            colors[i * 3] = 1.0;
+            colors[i * 3 + 1] = 0.0;
+            colors[i * 3 + 2] = 1.0;
+        }
 
         // Size
-        sizes[i] = Math.random() * 2 + 1;
+        sizes[i] = Math.random() * 3 + 1;
     }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    geometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
 
-    // Create shader material
+    // Create shader material with cyberpunk effects
     const material = new THREE.ShaderMaterial({
         uniforms: {
-            time: { value: 0 }
+            time: { value: 0 },
+            mousePosition: { value: new THREE.Vector2(0, 0) }
         },
         vertexShader: `
             attribute float size;
             attribute vec3 color;
+            attribute vec3 velocity;
             varying vec3 vColor;
+            varying float vDistance;
             uniform float time;
+            uniform vec2 mousePosition;
             
             void main() {
                 vColor = color;
-                vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                gl_PointSize = size * (300.0 / -mvPosition.z);
+                
+                // Animate particles
+                vec3 pos = position;
+                pos.x += sin(time * 0.5 + position.y * 0.1) * 0.5;
+                pos.y += cos(time * 0.3 + position.x * 0.1) * 0.5;
+                pos.z += sin(time * 0.7 + position.x * 0.1) * 0.5;
+                
+                // Mouse interaction
+                float distance = length(pos.xy - mousePosition * 10.0);
+                if (distance < 5.0) {
+                    pos.xy += normalize(pos.xy - mousePosition * 10.0) * 2.0;
+                }
+                
+                vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                vDistance = -mvPosition.z;
+                gl_PointSize = size * (300.0 / -mvPosition.z) * (1.0 + sin(time * 2.0) * 0.2);
                 gl_Position = projectionMatrix * mvPosition;
             }
         `,
         fragmentShader: `
             varying vec3 vColor;
+            varying float vDistance;
             
             void main() {
-                if (length(gl_PointCoord - vec2(0.5, 0.5)) > 0.475) discard;
-                gl_FragColor = vec4(vColor, 0.8);
+                vec2 center = gl_PointCoord - vec2(0.5);
+                float dist = length(center);
+                
+                // Create neon glow effect
+                float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
+                alpha *= 0.8 + 0.2 * sin(vDistance * 0.1);
+                
+                // Add inner glow
+                float innerGlow = 1.0 - smoothstep(0.0, 0.2, dist);
+                vec3 finalColor = vColor + innerGlow * vec3(1.0, 1.0, 1.0) * 0.3;
+                
+                gl_FragColor = vec4(finalColor, alpha);
             }
         `,
         transparent: true,
-        blending: THREE.AdditiveBlending
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
     });
 
     particleSystem = new THREE.Points(geometry, material);
@@ -99,15 +152,36 @@ function createParticleSystem() {
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
+    time += 0.01;
 
     if (particleSystem) {
+        // Update particle positions
+        const positions = particleSystem.geometry.attributes.position.array;
+        const velocities = particleSystem.geometry.attributes.velocity.array;
+        
+        for (let i = 0; i < positions.length; i += 3) {
+            positions[i] += velocities[i];
+            positions[i + 1] += velocities[i + 1];
+            positions[i + 2] += velocities[i + 2];
+            
+            // Wrap particles around
+            if (positions[i] > 15) positions[i] = -15;
+            if (positions[i] < -15) positions[i] = 15;
+            if (positions[i + 1] > 15) positions[i + 1] = -15;
+            if (positions[i + 1] < -15) positions[i + 1] = 15;
+            if (positions[i + 2] > 15) positions[i + 2] = -15;
+            if (positions[i + 2] < -15) positions[i + 2] = 15;
+        }
+        
+        particleSystem.geometry.attributes.position.needsUpdate = true;
+        
+        // Update uniforms
+        particleSystem.material.uniforms.time.value = time;
+        particleSystem.material.uniforms.mousePosition.value.set(mouseX, mouseY);
+        
+        // Rotate slowly
         particleSystem.rotation.x += 0.001;
         particleSystem.rotation.y += 0.002;
-        particleSystem.material.uniforms.time.value += 0.01;
-
-        // Mouse interaction
-        particleSystem.rotation.x += (mouseY - particleSystem.rotation.x) * 0.001;
-        particleSystem.rotation.y += (mouseX - particleSystem.rotation.y) * 0.001;
     }
 
     renderer.render(scene, camera);
@@ -125,8 +199,8 @@ function onWindowResize() {
 
 // Handle mouse movement
 function onDocumentMouseMove(event) {
-    mouseX = (event.clientX - windowHalfX) / 100;
-    mouseY = (event.clientY - windowHalfY) / 100;
+    mouseX = (event.clientX - windowHalfX) / windowHalfX;
+    mouseY = (event.clientY - windowHalfY) / windowHalfY;
 }
 
 // Navigation functionality
@@ -211,10 +285,11 @@ function initFloatingElements() {
         
         function animate() {
             const time = Date.now() * 0.001 * speed;
-            const x = Math.sin(time) * 10;
-            const y = Math.cos(time * 0.5) * 10;
+            const x = Math.sin(time) * 15;
+            const y = Math.cos(time * 0.5) * 15;
+            const rotation = Math.sin(time * 0.3) * 10;
             
-            element.style.transform = `translate(${x}px, ${y}px) rotate(${time * 10}deg)`;
+            element.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg)`;
             requestAnimationFrame(animate);
         }
         
@@ -271,11 +346,11 @@ function initNavbarScroll() {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         
         if (scrollTop > 100) {
-            navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-            navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+            navbar.style.background = 'rgba(10, 10, 10, 0.98)';
+            navbar.style.boxShadow = '0 2px 20px rgba(0, 255, 65, 0.3)';
         } else {
-            navbar.style.background = 'rgba(255, 255, 255, 0.95)';
-            navbar.style.boxShadow = 'none';
+            navbar.style.background = 'rgba(10, 10, 10, 0.95)';
+            navbar.style.boxShadow = '0 0 20px rgba(0, 255, 65, 0.3)';
         }
         
         lastScrollTop = scrollTop;
@@ -348,6 +423,26 @@ function initCounterAnimation() {
     counters.forEach(counter => counterObserver.observe(counter));
 }
 
+// Glitch effect for text
+function initGlitchEffects() {
+    const glitchElements = document.querySelectorAll('.title-name, .section-title');
+    
+    glitchElements.forEach(element => {
+        setInterval(() => {
+            if (Math.random() < 0.1) { // 10% chance every interval
+                element.style.textShadow = `
+                    ${Math.random() * 4 - 2}px ${Math.random() * 4 - 2}px 0 #ff0000,
+                    ${Math.random() * 4 - 2}px ${Math.random() * 4 - 2}px 0 #00ffff
+                `;
+                
+                setTimeout(() => {
+                    element.style.textShadow = '0 0 20px rgba(0, 255, 65, 0.8)';
+                }, 100);
+            }
+        }, 2000);
+    });
+}
+
 // Initialize all functionality when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     initThreeJS();
@@ -361,6 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initParallaxEffects();
     initTypingEffect();
     initCounterAnimation();
+    initGlitchEffects();
     
     // Add animation classes to elements
     const sections = document.querySelectorAll('section');
@@ -389,10 +485,12 @@ document.addEventListener('DOMContentLoaded', () => {
     projectCards.forEach(card => {
         card.addEventListener('mouseenter', () => {
             card.style.transform = 'translateY(-10px) scale(1.02)';
+            card.style.boxShadow = '0 0 40px rgba(0, 255, 65, 0.8)';
         });
         
         card.addEventListener('mouseleave', () => {
             card.style.transform = 'translateY(0) scale(1)';
+            card.style.boxShadow = '0 0 30px rgba(0, 255, 65, 0.5)';
         });
     });
     
@@ -400,15 +498,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const skillItems = document.querySelectorAll('.skill-item');
     skillItems.forEach(item => {
         item.addEventListener('mouseenter', () => {
-            item.style.background = '#667eea';
-            item.style.color = 'white';
+            item.style.background = 'rgba(0, 212, 255, 0.3)';
+            item.style.color = '#ffffff';
             item.style.transform = 'translateX(10px) scale(1.05)';
+            item.style.boxShadow = '0 0 30px rgba(0, 212, 255, 0.8)';
         });
         
         item.addEventListener('mouseleave', () => {
-            item.style.background = '#f8f9fa';
-            item.style.color = '#333';
+            item.style.background = 'rgba(0, 212, 255, 0.1)';
+            item.style.color = '#00d4ff';
             item.style.transform = 'translateX(0) scale(1)';
+            item.style.boxShadow = '0 0 20px rgba(0, 212, 255, 0.3)';
         });
     });
 });
