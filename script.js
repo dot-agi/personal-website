@@ -16,11 +16,14 @@ function initThreeJS() {
     renderer = new THREE.WebGLRenderer({ 
         canvas: canvas, 
         alpha: true,
-        antialias: true 
+        antialias: true,
+        powerPreference: "high-performance"
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio for performance
     renderer.setClearColor(0x000000, 0);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     // Create particle system
     createParticleSystem();
@@ -38,111 +41,156 @@ function initThreeJS() {
 
 // Create particle system
 function createParticleSystem() {
-    const particleCount = 1500;
+    const particleCount = 2000; // Increased particle count
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
     const sizes = new Float32Array(particleCount);
     const velocities = new Float32Array(particleCount * 3);
+    const opacities = new Float32Array(particleCount);
 
     const geometry = new THREE.BufferGeometry();
 
     for (let i = 0; i < particleCount; i++) {
-        // Position
-        positions[i * 3] = (Math.random() - 0.5) * 30;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * 30;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 30;
+        // Position - Create more dynamic distribution
+        const radius = Math.random() * 20 + 5;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.random() * Math.PI;
+        
+        positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+        positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+        positions[i * 3 + 2] = radius * Math.cos(phi);
 
-        // Velocity
-        velocities[i * 3] = (Math.random() - 0.5) * 0.02;
-        velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.02;
-        velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.02;
+        // Velocity - More varied movement
+        velocities[i * 3] = (Math.random() - 0.5) * 0.03;
+        velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.03;
+        velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.03;
 
-        // Color - Cyberpunk neon colors
+        // Color - Enhanced cyberpunk neon colors
         const colorChoice = Math.random();
-        if (colorChoice < 0.4) {
-            // Green neon
+        if (colorChoice < 0.35) {
+            // Bright green neon
             colors[i * 3] = 0.0;
             colors[i * 3 + 1] = 1.0;
-            colors[i * 3 + 2] = 0.25;
-        } else if (colorChoice < 0.7) {
-            // Cyan neon
+            colors[i * 3 + 2] = 0.3;
+        } else if (colorChoice < 0.65) {
+            // Bright cyan neon
             colors[i * 3] = 0.0;
-            colors[i * 3 + 1] = 0.8;
+            colors[i * 3 + 1] = 0.9;
             colors[i * 3 + 2] = 1.0;
-        } else {
-            // Magenta neon
+        } else if (colorChoice < 0.85) {
+            // Bright magenta neon
             colors[i * 3] = 1.0;
             colors[i * 3 + 1] = 0.0;
             colors[i * 3 + 2] = 1.0;
+        } else {
+            // White/blue accent
+            colors[i * 3] = 0.8;
+            colors[i * 3 + 1] = 0.9;
+            colors[i * 3 + 2] = 1.0;
         }
 
-        // Size
-        sizes[i] = Math.random() * 3 + 1;
+        // Size - More varied sizes
+        sizes[i] = Math.random() * 4 + 1.5;
+        
+        // Opacity - Vary opacity for depth effect
+        opacities[i] = Math.random() * 0.8 + 0.2;
     }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
     geometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+    geometry.setAttribute('opacity', new THREE.BufferAttribute(opacities, 1));
 
-    // Create shader material with cyberpunk effects
+    // Create enhanced shader material with better visual effects
     const material = new THREE.ShaderMaterial({
         uniforms: {
             time: { value: 0 },
-            mousePosition: { value: new THREE.Vector2(0, 0) }
+            mousePosition: { value: new THREE.Vector2(0, 0) },
+            resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
         },
         vertexShader: `
             attribute float size;
             attribute vec3 color;
             attribute vec3 velocity;
+            attribute float opacity;
             varying vec3 vColor;
             varying float vDistance;
+            varying float vOpacity;
             uniform float time;
             uniform vec2 mousePosition;
             
             void main() {
                 vColor = color;
+                vOpacity = opacity;
                 
-                // Animate particles
+                // Enhanced particle animation
                 vec3 pos = position;
-                pos.x += sin(time * 0.5 + position.y * 0.1) * 0.5;
-                pos.y += cos(time * 0.3 + position.x * 0.1) * 0.5;
-                pos.z += sin(time * 0.7 + position.x * 0.1) * 0.5;
                 
-                // Mouse interaction
-                float distance = length(pos.xy - mousePosition * 10.0);
-                if (distance < 5.0) {
-                    pos.xy += normalize(pos.xy - mousePosition * 10.0) * 2.0;
+                // Add wave motion
+                pos.x += sin(time * 0.5 + position.y * 0.1) * 0.8;
+                pos.y += cos(time * 0.3 + position.x * 0.1) * 0.8;
+                pos.z += sin(time * 0.7 + position.x * 0.1) * 0.8;
+                
+                // Add spiral motion
+                float angle = time * 0.2 + length(pos.xy) * 0.1;
+                pos.x += cos(angle) * 0.3;
+                pos.y += sin(angle) * 0.3;
+                
+                // Enhanced mouse interaction
+                float distance = length(pos.xy - mousePosition * 15.0);
+                if (distance < 8.0) {
+                    vec2 direction = normalize(pos.xy - mousePosition * 15.0);
+                    pos.xy += direction * 3.0 * (1.0 - distance / 8.0);
                 }
                 
                 vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
                 vDistance = -mvPosition.z;
-                gl_PointSize = size * (300.0 / -mvPosition.z) * (1.0 + sin(time * 2.0) * 0.2);
+                
+                // Dynamic size based on distance and time
+                float dynamicSize = size * (300.0 / -mvPosition.z);
+                dynamicSize *= 1.0 + sin(time * 2.0 + position.x * 0.1) * 0.3;
+                dynamicSize *= 1.0 + sin(time * 1.5 + position.y * 0.1) * 0.2;
+                
+                gl_PointSize = dynamicSize;
                 gl_Position = projectionMatrix * mvPosition;
             }
         `,
         fragmentShader: `
             varying vec3 vColor;
             varying float vDistance;
+            varying float vOpacity;
+            uniform float time;
             
             void main() {
                 vec2 center = gl_PointCoord - vec2(0.5);
                 float dist = length(center);
                 
-                // Create neon glow effect
+                // Enhanced neon glow effect
                 float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
-                alpha *= 0.8 + 0.2 * sin(vDistance * 0.1);
+                alpha *= vOpacity;
+                alpha *= 0.9 + 0.1 * sin(time * 3.0 + vDistance * 0.1);
                 
-                // Add inner glow
-                float innerGlow = 1.0 - smoothstep(0.0, 0.2, dist);
-                vec3 finalColor = vColor + innerGlow * vec3(1.0, 1.0, 1.0) * 0.3;
+                // Create inner core
+                float core = 1.0 - smoothstep(0.0, 0.2, dist);
+                
+                // Create outer glow
+                float glow = 1.0 - smoothstep(0.3, 0.8, dist);
+                glow *= 0.5;
+                
+                // Combine effects
+                vec3 finalColor = vColor * core + vColor * glow * 0.8;
+                
+                // Add subtle color variation
+                finalColor += vec3(0.1, 0.1, 0.2) * glow * sin(time * 2.0 + vDistance * 0.05);
                 
                 gl_FragColor = vec4(finalColor, alpha);
             }
         `,
         transparent: true,
         blending: THREE.AdditiveBlending,
-        depthWrite: false
+        depthWrite: false,
+        vertexColors: true
     });
 
     particleSystem = new THREE.Points(geometry, material);
@@ -152,25 +200,37 @@ function createParticleSystem() {
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
-    time += 0.01;
+    time += 0.016; // Consistent 60fps timing
 
     if (particleSystem) {
-        // Update particle positions
+        // Update particle positions with enhanced physics
         const positions = particleSystem.geometry.attributes.position.array;
         const velocities = particleSystem.geometry.attributes.velocity.array;
         
         for (let i = 0; i < positions.length; i += 3) {
+            // Update velocity with subtle acceleration
+            velocities[i] += (Math.random() - 0.5) * 0.001;
+            velocities[i + 1] += (Math.random() - 0.5) * 0.001;
+            velocities[i + 2] += (Math.random() - 0.5) * 0.001;
+            
+            // Apply velocity damping
+            velocities[i] *= 0.999;
+            velocities[i + 1] *= 0.999;
+            velocities[i + 2] *= 0.999;
+            
+            // Update positions
             positions[i] += velocities[i];
             positions[i + 1] += velocities[i + 1];
             positions[i + 2] += velocities[i + 2];
             
-            // Wrap particles around
-            if (positions[i] > 15) positions[i] = -15;
-            if (positions[i] < -15) positions[i] = 15;
-            if (positions[i + 1] > 15) positions[i + 1] = -15;
-            if (positions[i + 1] < -15) positions[i + 1] = 15;
-            if (positions[i + 2] > 15) positions[i + 2] = -15;
-            if (positions[i + 2] < -15) positions[i + 2] = 15;
+            // Enhanced boundary wrapping with smooth transitions
+            const maxDistance = 25;
+            if (positions[i] > maxDistance) positions[i] = -maxDistance;
+            if (positions[i] < -maxDistance) positions[i] = maxDistance;
+            if (positions[i + 1] > maxDistance) positions[i + 1] = -maxDistance;
+            if (positions[i + 1] < -maxDistance) positions[i + 1] = maxDistance;
+            if (positions[i + 2] > maxDistance) positions[i + 2] = -maxDistance;
+            if (positions[i + 2] < -maxDistance) positions[i + 2] = maxDistance;
         }
         
         particleSystem.geometry.attributes.position.needsUpdate = true;
@@ -179,9 +239,10 @@ function animate() {
         particleSystem.material.uniforms.time.value = time;
         particleSystem.material.uniforms.mousePosition.value.set(mouseX, mouseY);
         
-        // Rotate slowly
-        particleSystem.rotation.x += 0.001;
-        particleSystem.rotation.y += 0.002;
+        // Smooth rotation with varying speeds
+        particleSystem.rotation.x += 0.0008;
+        particleSystem.rotation.y += 0.0012;
+        particleSystem.rotation.z += 0.0004;
     }
 
     renderer.render(scene, camera);
@@ -195,12 +256,20 @@ function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    
+    if (particleSystem) {
+        particleSystem.material.uniforms.resolution.value.set(window.innerWidth, window.innerHeight);
+    }
 }
 
-// Handle mouse movement
+// Handle mouse movement with smooth interpolation
 function onDocumentMouseMove(event) {
-    mouseX = (event.clientX - windowHalfX) / windowHalfX;
-    mouseY = (event.clientY - windowHalfY) / windowHalfY;
+    const targetX = (event.clientX - windowHalfX) / windowHalfX;
+    const targetY = (event.clientY - windowHalfY) / windowHalfY;
+    
+    // Smooth interpolation for better performance
+    mouseX += (targetX - mouseX) * 0.1;
+    mouseY += (targetY - mouseY) * 0.1;
 }
 
 // Navigation functionality
@@ -285,11 +354,12 @@ function initFloatingElements() {
         
         function animate() {
             const time = Date.now() * 0.001 * speed;
-            const x = Math.sin(time) * 15;
-            const y = Math.cos(time * 0.5) * 15;
-            const rotation = Math.sin(time * 0.3) * 10;
+            const x = Math.sin(time) * 20;
+            const y = Math.cos(time * 0.5) * 20;
+            const rotation = Math.sin(time * 0.3) * 15;
+            const scale = 1 + Math.sin(time * 0.7) * 0.1;
             
-            element.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg)`;
+            element.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg) scale(${scale})`;
             requestAnimationFrame(animate);
         }
         
@@ -346,10 +416,10 @@ function initNavbarScroll() {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         
         if (scrollTop > 100) {
-            navbar.style.background = 'rgba(10, 10, 10, 0.98)';
+            navbar.style.background = 'rgba(0, 0, 0, 0.98)';
             navbar.style.boxShadow = '0 2px 20px rgba(0, 255, 65, 0.3)';
         } else {
-            navbar.style.background = 'rgba(10, 10, 10, 0.95)';
+            navbar.style.background = 'rgba(0, 0, 0, 0.95)';
             navbar.style.boxShadow = '0 0 20px rgba(0, 255, 65, 0.3)';
         }
         
